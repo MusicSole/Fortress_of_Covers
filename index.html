@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fortress of Covers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0b0c10;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 4rem;
+      color: #f0134d;
+      text-shadow: 2px 2px #f5af19;
+    }
+
+    .selector-container {
+      margin-top: 30px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #1f2833;
+      color: #66fcf1;
+      font-family: 'Playfair Display', serif;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      background-color: #f0134d;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #f0134d, 0 0 20px #f0134d;
+      transition: box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #c1123c;
+      box-shadow: 0 0 20px #f0134d, 0 0 30px #f0134d;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fortress of Covers</h1>
+  <div class="selector-container">
+    <select id="month">
+      <option value="" disabled selected>Select Month</option>
+      <option>January</option>
+      <option>February</option>
+      <option>March</option>
+      <option>April</option>
+      <option>May</option>
+      <option>June</option>
+      <option>July</option>
+      <option>August</option>
+      <option>September</option>
+      <option>October</option>
+      <option>November</option>
+      <option>December</option>
+    </select>
+
+    <select id="year">
+      <option value="" disabled selected>Select Year</option>
+    </select>
+
+    <select id="publisher">
+      <option value="" disabled selected>Select Publisher</option>
+      <option>Marvel</option>
+      <option>DC</option>
+    </select>
+  </div>
+
+  <button onclick="goToSelection()">Activate</button>
+
+  <script>
+    const yearSelect = document.getElementById('year');
+    for (let year = 1961; year <= 1999; year++) {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.appendChild(option);
+    }
+
+    function goToSelection() {
+      const month = document.getElementById('month').value;
+      const year = document.getElementById('year').value;
+      const publisher = document.getElementById('publisher').value;
+
+      if (!month || !year || !publisher) {
+        alert("Please select all options.");
+        return;
+      }
+
+      const url = `/covers/${publisher.toLowerCase()}/${year}/${month.toLowerCase()}`;
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>
 
