@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>June 1961 DC Covers</title>
+  <title>DC Comics – June 1961 Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -43,6 +43,15 @@
     .cover p {
       margin: 5px 0;
       font-size: 14px;
+    }
+
+    .cover a {
+      color: #003366;
+      text-decoration: none;
+    }
+
+    .cover a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -85,9 +94,19 @@
               this.style.display = 'none';
             };
 
+            // Generate hyperlink for penciler
+            let pencilerHTML = '—';
+            if (pencils) {
+              const filename = pencils
+                .toLowerCase()
+                .replace(/\s+/g, '_')
+                .replace(/[^\w_]/g, '');
+              pencilerHTML = `<a href="/artists/${filename}.html" target="_blank">${pencils}</a>`;
+            }
+
             const text = `
               <p><strong>${title} #${issue}</strong></p>
-              <p>Pencils: ${pencils || '—'}</p>
+              <p>Pencils: ${pencilerHTML}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
             `;
