@@ -1,97 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>DC Covers – June 1961</title>
+  <meta charset="UTF-8" />
+  <title>June 1961 DC Covers</title>
   <style>
     body {
-      font-family: sans-serif;
+      background-color: #0d1117;
+      color: #ffffff;
+      font-family: Garamond, serif;
       padding: 20px;
-      background: #f5f5f5;
     }
+
     h1 {
-      color: #222;
+      text-align: center;
+      margin-bottom: 40px;
     }
-    .comics-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
+
+    .cover {
+      display: inline-block;
+      width: 240px;
+      background-color: #1c1f26;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 15px;
+      text-align: left;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
     }
-    .comic {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      width: 300px;
-      padding: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .cover:hover {
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
     }
-    .comic img {
+
+    img {
       width: 100%;
       height: auto;
-      border-radius: 4px;
+      border-radius: 5px;
     }
-    .comic h3 {
-      margin: 10px 0 5px;
-    }
-    .comic p {
-      margin: 4px 0;
+
+    .cover p {
+      margin: 5px 0;
       font-size: 14px;
     }
   </style>
 </head>
 <body>
-
-  <h1>DC Comic Covers – June 1961</h1>
-  <div class="comics-grid" id="comics"></div>
+  <h1>DC Comics – June 1961 Covers</h1>
+  <div id="covers">Loading...</div>
 
   <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    function parseCSV(text) {
-      const lines = text.split('\n');
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      return lines.slice(1).map(line => {
-        const cells = line.split(',').map(c => c.trim());
-        const row = {};
-        headers.forEach((header, i) => {
-          row[header] = cells[i];
-        });
-        return row;
-      });
-    }
-
-    function renderComics(comics) {
-      const container = document.getElementById('comics');
-      comics.forEach(comic => {
-        const div = document.createElement('div');
-        div.className = 'comic';
-        div.innerHTML = `
-          <img src="${comic.imageurl}" alt="${comic.title}">
-          <h3>${comic.title} #${comic.issues}</h3>
-          <p><strong>Pencils:</strong> ${comic.pencils}</p>
-          <p><strong>Inker:</strong> ${comic.inker}</p>
-          <p><strong>Grade:</strong> ${comic.grade}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    fetch(CSV_URL)
+    fetch(SHEET_URL)
       .then(response => response.text())
-      .then(text => {
-        const data = parseCSV(text);
-        const filtered = data.filter(c =>
-          c.month === 'June' &&
-          c.year === '1961' &&
-          c.title && c.title.toLowerCase().includes('dc')
-        );
-        renderComics(filtered);
+      .then(data => {
+        const rows = data.split('\n').slice(1);
+        const container = document.getElementById('covers');
+        container.innerHTML = '';
+
+        rows.forEach(row => {
+          const cols = row.split(',');
+
+          const month = cols[0]?.trim().toLowerCase();
+          const year = cols[1]?.trim();
+          const title = cols[2]?.trim();
+          const issue = cols[3]?.trim();
+          const pencils = cols[4]?.trim();
+          const inker = cols[5]?.trim();
+          const grade = cols[6]?.trim();
+          const publisher = cols[7]?.trim().toLowerCase();
+          const imageUrl = cols[8]?.trim();
+
+          if (month === 'june' && year === '1961' && publisher === 'dc' && imageUrl) {
+            const div = document.createElement('div');
+            div.className = 'cover';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `${title} #${issue}`;
+            img.onerror = function () {
+              console.warn('Broken image URL:', this.src);
+              this.style.display = 'none';
+            };
+
+            const text = `
+              <p><strong>${title} #${issue}</strong></p>
+              <p><em>Pencils:</em> ${pencils || '—'}</p>
+              <p><em>Inker:</em> ${inker || '—'}</p>
+              <p><em>Grade:</em> ${grade || '—'}</p>
+            `;
+
+            div.appendChild(img);
+            div.innerHTML += text;
+            container.appendChild(div);
+          }
+        });
       })
-      .catch(err => {
-        document.getElementById('comics').innerText = 'Failed to load comics data.';
-        console.error(err);
+      .catch(error => {
+        document.getElementById('covers').innerHTML = 'Failed to load data.';
+        console.error('Error loading CSV:', error);
       });
   </script>
-
 </body>
 </html>
