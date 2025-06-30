@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sheldon Moldoff – Comic Covers</title>
+  <style>
+    body {
+      background-color: #f8f6f2;
+      color: #000000;
+      font-family: Garamond, serif;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .cover {
+      display: inline-block;
+      width: 240px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 15px;
+      text-align: left;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      border: 1px solid #ddd;
+    }
+
+    .cover:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    .cover p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="page-title">Artist Gallery</h1>
+  <div id="covers">Loading...</div>
+
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+
+    // Get artist name from filename
+    const path = window.location.pathname;
+    const filename = path.split('/').pop().replace('.html', '');
+    const artistName = filename.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); // e.g., "jack_kirby" → "Jack Kirby"
+
+    document.getElementById('page-title').innerText = `${artistName} – Comic Covers`;
+
+    fetch(SHEET_URL)
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.split('\n').slice(1);
+        const container = document.getElementById('covers');
+        container.innerHTML = '';
+
+        rows.forEach(row => {
+          const cols = row.split(',');
+
+          const month = cols[0]?.trim();
+          const year = cols[1]?.trim();
+          const title = cols[2]?.trim();
+          const issue = cols[3]?.trim();
+          const pencils = cols[4]?.trim();
+          const inker = cols[5]?.trim();
+          const grade = cols[6]?.trim();
+          const publisher = cols[7]?.trim();
+          const imageUrl = cols[8]?.trim();
+
+          if (pencils && pencils.toLowerCase() === artistName.toLowerCase() && imageUrl) {
+            const div = document.createElement('div');
+            div.className = 'cover';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `${title} #${issue}`;
+            img.onerror = function () {
+              this.style.display = 'none';
+            };
+
+            const html = `
+              <p><strong>${title} #${issue}</strong> (${publisher}, ${month} ${year})</p>
+              <p>Inker: ${inker || '—'}</p>
+              <p>Grade: ${grade || '—'}</p>
+            `;
+
+            div.appendChild(img);
+            div.innerHTML += html;
+            container.appendChild(div);
+          }
+        });
+      })
+      .catch(err => {
+        document.getElementById('covers').innerText = 'Failed to load data.';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
 
