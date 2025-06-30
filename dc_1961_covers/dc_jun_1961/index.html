@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DC Covers – June 1961</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #222;
+    }
+    .comics-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .comic {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 300px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .comic img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .comic h3 {
+      margin: 10px 0 5px;
+    }
+    .comic p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
 
+  <h1>DC Comic Covers – June 1961</h1>
+  <div class="comics-grid" id="comics"></div>
+
+  <script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+
+    function parseCSV(text) {
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      return lines.slice(1).map(line => {
+        const cells = line.split(',').map(c => c.trim());
+        const row = {};
+        headers.forEach((header, i) => {
+          row[header] = cells[i];
+        });
+        return row;
+      });
+    }
+
+    function renderComics(comics) {
+      const container = document.getElementById('comics');
+      comics.forEach(comic => {
+        const div = document.createElement('div');
+        div.className = 'comic';
+        div.innerHTML = `
+          <img src="${comic.imageurl}" alt="${comic.title}">
+          <h3>${comic.title} #${comic.issues}</h3>
+          <p><strong>Pencils:</strong> ${comic.pencils}</p>
+          <p><strong>Inker:</strong> ${comic.inker}</p>
+          <p><strong>Grade:</strong> ${comic.grade}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    fetch(CSV_URL)
+      .then(response => response.text())
+      .then(text => {
+        const data = parseCSV(text);
+        const filtered = data.filter(c =>
+          c.month === 'June' &&
+          c.year === '1961' &&
+          c.title && c.title.toLowerCase().includes('dc')
+        );
+        renderComics(filtered);
+      })
+      .catch(err => {
+        document.getElementById('comics').innerText = 'Failed to load comics data.';
+        console.error(err);
+      });
+  </script>
+
+</body>
+</html>
