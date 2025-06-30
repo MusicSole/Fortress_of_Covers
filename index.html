@@ -95,7 +95,7 @@
   <button onclick="goToSelection()">Activate</button>
 
   <script>
-    // Fill year dropdown
+    // Populate the year dropdown
     const yearSelect = document.getElementById('year');
     for (let year = 1961; year <= 1999; year++) {
       const option = document.createElement('option');
@@ -107,25 +107,29 @@
     function goToSelection() {
       const month = document.getElementById('month').value;
       const year = document.getElementById('year').value;
-      const publisher = document.getElementById('publisher').value;
+      const rawPublisher = document.getElementById('publisher').value;
 
-      if (!month || !year || !publisher) {
+      if (!month || !year || !rawPublisher) {
         alert("Please select all options.");
         return;
       }
 
+      const publisher = rawPublisher.toLowerCase(); // enforce lowercase
       const folder = `${publisher}_${year}_covers`;
 
       let page;
+
       if (publisher === "marvel") {
-        const yearSuffix = year.toString().slice(-2); // "61"
+        const yearSuffix = year.toString().slice(-2); // e.g. "61"
         page = `${publisher}_${month}_${yearSuffix}`; // marvel_jun_61
       } else if (publisher === "dc") {
         page = `${publisher}_${month}_${year}`; // dc_jun_1961
+      } else {
+        alert("Unsupported publisher.");
+        return;
       }
 
-      const url = `${folder}/${page}/`; // redirect to folder
-
+      const url = `${folder}/${page}/`;
       window.location.href = url;
     }
   </script>
