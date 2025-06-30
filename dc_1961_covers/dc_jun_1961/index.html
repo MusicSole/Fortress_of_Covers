@@ -5,8 +5,8 @@
   <title>June 1961 DC Covers</title>
   <style>
     body {
-      background-color: #0d1117;
-      color: #ffffff;
+      background-color: #f8f6f2;
+      color: #000000;
       font-family: Garamond, serif;
       padding: 20px;
     }
@@ -19,17 +19,18 @@
     .cover {
       display: inline-block;
       width: 240px;
-      background-color: #1c1f26;
+      background-color: #ffffff;
       border-radius: 10px;
       padding: 10px;
       margin: 15px;
       text-align: left;
       box-shadow: 0 0 0 rgba(0, 0, 0, 0);
       transition: box-shadow 0.3s ease, transform 0.3s ease;
+      border: 1px solid #ddd;
     }
 
     .cover:hover {
-      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
       transform: translateY(-5px);
     }
 
@@ -86,9 +87,9 @@
 
             const text = `
               <p><strong>${title} #${issue}</strong></p>
-              <p><em>Pencils:</em> ${pencils || '—'}</p>
-              <p><em>Inker:</em> ${inker || '—'}</p>
-              <p><em>Grade:</em> ${grade || '—'}</p>
+              <p>Pencils: ${pencils || '—'}</p>
+              <p>Inker: ${inker || '—'}</p>
+              <p>Grade: ${grade || '—'}</p>
             `;
 
             div.appendChild(img);
