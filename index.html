@@ -95,6 +95,7 @@
   <button onclick="goToSelection()">Activate</button>
 
   <script>
+    // Fill in years from 1961 to 1999
     const yearSelect = document.getElementById('year');
     for (let year = 1961; year <= 1999; year++) {
       const option = document.createElement('option');
@@ -113,10 +114,19 @@
         return;
       }
 
-      const url = `/covers/${publisher.toLowerCase()}/${year}/${month.toLowerCase()}`;
+      // Convert month to lowercase 3-letter abbreviation
+      const monthAbbr = month.slice(0, 3).toLowerCase(); // e.g., "June" → "jun"
+
+      // Get last 2 digits of year
+      const yearSuffix = year.slice(-2); // e.g., "1961" → "61"
+
+      // Build the folder name and page name
+      const folderPrefix = `${publisher.toLowerCase()}_${year}_covers`;
+      const pageName = `${publisher.toLowerCase()}_${monthAbbr}_${yearSuffix}`;
+
+      const url = `/${folderPrefix}/${pageName}`;
       window.location.href = url;
     }
   </script>
 </body>
 </html>
-
