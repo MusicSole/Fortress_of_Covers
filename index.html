@@ -95,7 +95,7 @@
   <button onclick="goToSelection()">Activate</button>
 
   <script>
-    // Populate the year dropdown
+    // Fill year dropdown
     const yearSelect = document.getElementById('year');
     for (let year = 1961; year <= 1999; year++) {
       const option = document.createElement('option');
@@ -114,10 +114,17 @@
         return;
       }
 
-      const yearSuffix = year.toString().slice(-2); // "1961" → "61"
-      const folder = `${publisher}_${year}_covers`;        // e.g., marvel_1961_covers
-      const page = `${publisher}_${month}_${yearSuffix}`;  // e.g., marvel_jun_61
-      const url = `${folder}/${page}/`; // folder path with trailing slash
+      const folder = `${publisher}_${year}_covers`;
+
+      let page;
+      if (publisher === "marvel") {
+        const yearSuffix = year.toString().slice(-2); // "61"
+        page = `${publisher}_${month}_${yearSuffix}`; // marvel_jun_61
+      } else if (publisher === "dc") {
+        page = `${publisher}_${month}_${year}`; // dc_jun_1961
+      }
+
+      const url = `${folder}/${page}/`; // redirect to folder
 
       window.location.href = url;
     }
