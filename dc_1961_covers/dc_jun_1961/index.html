@@ -94,14 +94,14 @@
               this.style.display = 'none';
             };
 
-            // Create penciler hyperlink
+            // Generate hyperlink for penciler
             let pencilerHTML = '—';
             if (pencils) {
               const filename = pencils
                 .toLowerCase()
                 .replace(/\s+/g, '_')
                 .replace(/[^\w_]/g, '');
-              pencilerHTML = `<a href="artists/${filename}.html" target="_blank">${pencils}</a>`;
+              pencilerHTML = `<a href="/artists/${filename}.html" target="_blank">${pencils}</a>`;
             }
 
             const text = `
