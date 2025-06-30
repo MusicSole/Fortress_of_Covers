@@ -67,18 +67,18 @@
   <div class="selector-container">
     <select id="month">
       <option value="" disabled selected>Select Month</option>
-      <option>January</option>
-      <option>February</option>
-      <option>March</option>
-      <option>April</option>
-      <option>May</option>
-      <option>June</option>
-      <option>July</option>
-      <option>August</option>
-      <option>September</option>
-      <option>October</option>
-      <option>November</option>
-      <option>December</option>
+      <option value="jan">January</option>
+      <option value="feb">February</option>
+      <option value="mar">March</option>
+      <option value="apr">April</option>
+      <option value="may">May</option>
+      <option value="jun">June</option>
+      <option value="jul">July</option>
+      <option value="aug">August</option>
+      <option value="sep">September</option>
+      <option value="oct">October</option>
+      <option value="nov">November</option>
+      <option value="dec">December</option>
     </select>
 
     <select id="year">
@@ -87,15 +87,15 @@
 
     <select id="publisher">
       <option value="" disabled selected>Select Publisher</option>
-      <option>Marvel</option>
-      <option>DC</option>
+      <option value="marvel">Marvel</option>
+      <option value="dc">DC</option>
     </select>
   </div>
 
   <button onclick="goToSelection()">Activate</button>
 
   <script>
-    // Fill in years from 1961 to 1999
+    // Populate the year dropdown
     const yearSelect = document.getElementById('year');
     for (let year = 1961; year <= 1999; year++) {
       const option = document.createElement('option');
@@ -114,17 +114,11 @@
         return;
       }
 
-      // Convert month to lowercase 3-letter abbreviation
-      const monthAbbr = month.slice(0, 3).toLowerCase(); // e.g., "June" → "jun"
+      const yearSuffix = year.toString().slice(-2); // "1961" → "61"
+      const folder = `${publisher}_${year}_covers`;        // e.g., marvel_1961_covers
+      const page = `${publisher}_${month}_${yearSuffix}`;  // e.g., marvel_jun_61
+      const url = `${folder}/${page}/`; // folder path with trailing slash
 
-      // Get last 2 digits of year
-      const yearSuffix = year.slice(-2); // e.g., "1961" → "61"
-
-      // Build the folder name and page name
-      const folderPrefix = `${publisher.toLowerCase()}_${year}_covers`;
-      const pageName = `${publisher.toLowerCase()}_${monthAbbr}_${yearSuffix}`;
-
-      const url = `/${folderPrefix}/${pageName}`;
       window.location.href = url;
     }
   </script>
