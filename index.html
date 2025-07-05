@@ -114,20 +114,10 @@
         return;
       }
 
-      const publisher = rawPublisher.toLowerCase(); // enforce lowercase
-      const folder = `${publisher}_${year}_covers`;
+      const publisher = rawPublisher.toLowerCase();
+      const folder = `${publisher}_1961_covers`; // Always reference 4-digit year (this can be changed to `${publisher}_${year}_covers` if you have other years)
 
-      let page;
-
-      if (publisher === "marvel") {
-        const yearSuffix = year.toString().slice(-2); // e.g. "61"
-        page = `${publisher}_${month}_${yearSuffix}`; // marvel_jun_1961
-      } else if (publisher === "dc") {
-        page = `${publisher}_${month}_${year}`; // dc_jun_1961
-      } else {
-        alert("Unsupported publisher.");
-        return;
-      }
+      const page = `${publisher}_${month}_${year}`; // ✅ Uses full year (e.g., marvel_jun_1961)
 
       const url = `${folder}/${page}/`;
       window.location.href = url;
