@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Curt Swan – Comic Covers</title>
+  <title>Artist – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -44,6 +44,8 @@
       font-size: 14px;
     }
   </style>
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 </head>
 <body>
   <h1 id="page-title">Artist Gallery</h1>
@@ -52,32 +54,23 @@
   <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    // Get artist name from filename
+    // Get artist name from filename (e.g., curt_swan.html)
     const path = window.location.pathname;
     const filename = path.split('/').pop().replace('.html', '');
-    const artistName = filename.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); // e.g., "jack_kirby" → "Jack Kirby"
+    const artistName = filename.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
     document.getElementById('page-title').innerText = `${artistName} – Comic Covers`;
 
-    fetch(SHEET_URL)
-      .then(response => response.text())
-      .then(data => {
-        const rows = data.split('\n').slice(1);
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: false,
+      complete: function(results) {
+        const rows = results.data.slice(1); // Skip header row
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
-        rows.forEach(row => {
-          const cols = row.split(',');
-
-          const month = cols[0]?.trim();
-          const year = cols[1]?.trim();
-          const title = cols[2]?.trim();
-          const issue = cols[3]?.trim();
-          const pencils = cols[4]?.trim();
-          const inker = cols[5]?.trim();
-          const grade = cols[6]?.trim();
-          const publisher = cols[7]?.trim();
-          const imageUrl = cols[8]?.trim();
+        rows.forEach(cols => {
+          const [month, year, title, issue, pencils, inker, grade, publisher, imageUrl] = cols.map(c => c?.trim());
 
           if (pencils && pencils.toLowerCase() === artistName.toLowerCase() && imageUrl) {
             const div = document.createElement('div');
@@ -101,11 +94,12 @@
             container.appendChild(div);
           }
         });
-      })
-      .catch(err => {
+      },
+      error: function(err) {
         document.getElementById('covers').innerText = 'Failed to load data.';
-        console.error(err);
-      });
+        console.error('PapaParse Error:', err);
+      }
+    });
   </script>
 </body>
 </html>
