@@ -44,7 +44,7 @@
       font-size: 14px;
     }
   </style>
-  <!-- PapaParse for CSV parsing -->
+  <!-- PapaParse library -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 </head>
 <body>
@@ -54,10 +54,13 @@
   <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    // Get artist name from filename (e.g., curt_swan.html)
+    // Extract artist name from filename
     const path = window.location.pathname;
     const filename = path.split('/').pop().replace('.html', '');
-    const artistName = filename.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const artistName = filename.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).trim();
+
+    console.log("DEBUG – filename:", filename);
+    console.log("DEBUG – artistName:", artistName);
 
     document.getElementById('page-title').innerText = `${artistName} – Comic Covers`;
 
@@ -69,10 +72,21 @@
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
-        rows.forEach(cols => {
+        rows.forEach((cols, index) => {
           const [month, year, title, issue, pencils, inker, grade, publisher, imageUrl] = cols.map(c => c?.trim());
 
-          if (pencils && pencils.toLowerCase() === artistName.toLowerCase() && imageUrl) {
+          // Debug log for each row
+          console.log(`Row ${index + 2}:`, {
+            pencils,
+            artistName,
+            match: pencils?.trim().toLowerCase() === artistName.toLowerCase()
+          });
+
+          if (
+            pencils &&
+            pencils.trim().toLowerCase() === artistName.toLowerCase() &&
+            imageUrl
+          ) {
             const div = document.createElement('div');
             div.className = 'cover';
 
