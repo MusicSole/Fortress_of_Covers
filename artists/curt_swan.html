@@ -43,6 +43,18 @@
       margin: 5px 0;
       font-size: 14px;
     }
+
+    a.back-link {
+      display: inline-block;
+      margin-top: 30px;
+      font-size: 16px;
+      text-decoration: none;
+      color: #003366;
+    }
+
+    a.back-link:hover {
+      text-decoration: underline;
+    }
   </style>
   <!-- PapaParse library -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
@@ -51,10 +63,13 @@
   <h1 id="page-title">Artist Gallery</h1>
   <div id="covers">Loading...</div>
 
+  <!-- Example full-path back link to landing page -->
+  <a class="back-link" href="/Fortress_of_Covers/index.html">← Back to Main Gallery</a>
+
   <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    // Extract artist name from filename
+    // Get artist name from the full path
     const path = window.location.pathname;
     const filename = path.split('/').pop().replace('.html', '');
     const artistName = filename.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).trim();
