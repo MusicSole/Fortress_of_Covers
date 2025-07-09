@@ -69,6 +69,15 @@
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
+    // Helper: Convert 3-letter month abbreviation to numeric month
+    function convertMonthToNumber(month) {
+      const monthMap = {
+        jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
+        jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12
+      };
+      return monthMap[month.toLowerCase()] || '?';
+    }
+
     fetch(SHEET_URL)
       .then(response => response.text())
       .then(data => {
@@ -115,8 +124,11 @@
               this.style.display = 'none';
             };
 
+            const monthNum = convertMonthToNumber(month);
+
             const text = `
               <p><strong>${title} #${issue}</strong></p>
+              <p>Month/Year: ${monthNum}/${year}</p>
               <p>Pencils: ${pencils || '—'}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
@@ -139,5 +151,3 @@
   </script>
 </body>
 </html>
-
-
