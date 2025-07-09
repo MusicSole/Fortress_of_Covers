@@ -80,7 +80,15 @@
           const inker = cols[5]?.trim();
           const grade = cols[6]?.trim();
           const publisher = cols[7]?.trim().toLowerCase();
-          const imageUrl = cols[8]?.trim();
+          const imageFile = cols[8]?.trim();
+
+          // Build proper image path if file name is relative
+          let imageUrl = '';
+          if (imageFile && !imageFile.startsWith('http')) {
+            imageUrl = `/dc_1961_covers/dc_jun_1961/${imageFile}`;
+          } else {
+            imageUrl = imageFile;
+          }
 
           if (month === 'june' && year === '1961' && publisher === 'dc' && imageUrl) {
             const div = document.createElement('div');
@@ -94,19 +102,15 @@
               this.style.display = 'none';
             };
 
-            // Corrected hyperlink for penciler
-            let pencilerHTML = '—';
+            let pencilerLink = '—';
             if (pencils) {
-              const filename = pencils
-                .toLowerCase()
-                .replace(/\s+/g, '_')
-                .replace(/[^\w_]/g, '');
-              pencilerHTML = `<a href="artists/${filename}.html" target="_blank">${pencils}</a>`;
+              const filename = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+              pencilerLink = `<a href="/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
             }
 
             const text = `
               <p><strong>${title} #${issue}</strong></p>
-              <p>Pencils: ${pencilerHTML}</p>
+              <p>Pencils: ${pencilerLink}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
             `;
