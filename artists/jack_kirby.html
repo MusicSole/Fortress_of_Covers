@@ -69,13 +69,15 @@
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    // Helper: Convert 3-letter month abbreviation to numeric month
-    function convertMonthToNumber(month) {
+    // Convert month abbreviation to full name (e.g. "jun" -> "June")
+    function convertMonthToFullName(monthAbbrev) {
       const monthMap = {
-        jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
-        jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12
+        jan: 'January', feb: 'February', mar: 'March', apr: 'April',
+        may: 'May', jun: 'June', jul: 'July', aug: 'August',
+        sep: 'September', oct: 'October', nov: 'November', dec: 'December'
       };
-      return monthMap[month.toLowerCase()] || '?';
+      const cleaned = monthAbbrev?.toLowerCase().replace(/["']/g, '').trim();
+      return monthMap[cleaned] || '?';
     }
 
     fetch(SHEET_URL)
@@ -90,7 +92,7 @@
         rows.forEach(row => {
           const cols = row.split(',');
 
-          const month = cols[0]?.trim().toLowerCase();
+          const rawMonth = cols[0]?.trim();
           const year = cols[1]?.trim();
           const title = cols[2]?.trim();
           const issue = cols[3]?.trim();
@@ -100,15 +102,17 @@
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
-          // Match artist
+          // Normalize penciler
           const normalizedPenciler = pencils?.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
           if (normalizedPenciler === artistParam) {
             found = true;
 
+            const monthFull = convertMonthToFullName(rawMonth);
+
             let imageUrl = '';
             if (imageFile && !imageFile.startsWith('http')) {
-              imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
+              imageUrl = `/${publisher}_1961_covers/${publisher}_${rawMonth.toLowerCase()}_${year}/${imageFile}`;
             } else {
               imageUrl = imageFile;
             }
@@ -124,11 +128,9 @@
               this.style.display = 'none';
             };
 
-            const monthNum = convertMonthToNumber(month);
-
             const text = `
               <p><strong>${title} #${issue}</strong></p>
-              <p>Month/Year: ${monthNum}/${year}</p>
+              <p>${monthFull} ${year}</p>
               <p>Pencils: ${pencils || '—'}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
