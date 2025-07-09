@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Russ Heath – Comic Covers</title>
+  <title>Artist – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -13,7 +12,8 @@
     }
 
     h1 {
-      margin-bottom: 20px;
+      text-align: center;
+      margin-bottom: 40px;
     }
 
     .cover {
@@ -56,11 +56,18 @@
   </style>
 </head>
 <body>
-  <h1>Russ Heath – Comic Covers</h1>
-  <div id="covers">Loading...</div>
+  <h1 id="artistName">Loading Artist...</h1>
+  <div id="covers">Loading covers...</div>
 
   <script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1i_3DxqjIj60bi_MCvykjPQ-4n_p_SeJIL_3-T1M6w4w/export?format=csv';
+    // Detect artist from filename
+    const pathParts = window.location.pathname.split('/');
+    const filename = pathParts[pathParts.length - 1];
+    const artistParam = filename.replace('.html', '').toLowerCase();
+    const displayName = artistParam.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    document.getElementById('artistName').textContent = `${displayName} – Comic Covers`;
+
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
     fetch(SHEET_URL)
       .then(response => response.text())
@@ -69,20 +76,34 @@
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
+        let found = false;
+
         rows.forEach(row => {
           const cols = row.split(',');
 
-          const month = cols[0]?.trim();
+          const month = cols[0]?.trim().toLowerCase();
           const year = cols[1]?.trim();
           const title = cols[2]?.trim();
           const issue = cols[3]?.trim();
           const pencils = cols[4]?.trim();
           const inker = cols[5]?.trim();
           const grade = cols[6]?.trim();
-          const publisher = cols[7]?.trim();
-          const imageUrl = cols[8]?.trim();
+          const publisher = cols[7]?.trim().toLowerCase();
+          const imageFile = cols[8]?.trim();
 
-          if (pencils?.toLowerCase() === 'curt swan' && imageUrl) {
+          // Match artist
+          const normalizedPenciler = pencils?.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+
+          if (normalizedPenciler === artistParam) {
+            found = true;
+
+            let imageUrl = '';
+            if (imageFile && !imageFile.startsWith('http')) {
+              imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
+            } else {
+              imageUrl = imageFile;
+            }
+
             const div = document.createElement('div');
             div.className = 'cover';
 
@@ -96,10 +117,9 @@
 
             const text = `
               <p><strong>${title} #${issue}</strong></p>
-              <p>Month: ${month} ${year}</p>
+              <p>Pencils: ${pencils || '—'}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
-              <p>Publisher: ${publisher || '—'}</p>
             `;
 
             div.appendChild(img);
@@ -107,6 +127,10 @@
             container.appendChild(div);
           }
         });
+
+        if (!found) {
+          container.innerHTML = `<p>No covers found for ${displayName}.</p>`;
+        }
       })
       .catch(error => {
         document.getElementById('covers').innerHTML = 'Failed to load data.';
@@ -115,4 +139,3 @@
   </script>
 </body>
 </html>
-
