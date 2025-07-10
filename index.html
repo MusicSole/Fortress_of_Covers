@@ -61,6 +61,20 @@
       box-shadow: 0 0 20px #f0134d, 0 0 30px #f0134d;
     }
 
+    .shooting-star {
+  position: fixed;
+  top: 20%;
+  left: -100px;
+  width: 2px;
+  height: 2px;
+  background: white;
+  box-shadow: 0 0 10px 2px white;
+  animation: shoot 2s linear forwards;
+  z-index: 9999;
+  opacity: 0.8;
+  transform: rotate(45deg);
+}
+
     @keyframes shoot {
   0% {
     left: -100px;
