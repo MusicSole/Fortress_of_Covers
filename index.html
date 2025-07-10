@@ -60,10 +60,27 @@
       background-color: #c1123c;
       box-shadow: 0 0 20px #f0134d, 0 0 30px #f0134d;
     }
+
+    @keyframes shoot {
+  0% {
+    left: -100px;
+    top: 20%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    left: 110%;
+    top: 80%;
+    opacity: 0;
+  }
+}
   </style>
 </head>
 <body>
   <h1>Fortress of Covers</h1>
+  <div class="shooting-star"></div>
   <div class="selector-container">
     <select id="month">
       <option value="" disabled selected>Select Month</option>
