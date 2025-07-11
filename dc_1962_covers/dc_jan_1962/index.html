@@ -69,38 +69,44 @@
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
-        rows.forEach(row => {
+        rows.forEach((row, index) => {
           const cols = row.split(',');
 
-          const month = cols[0]?.trim().toLowerCase(); // "january"
-          const year = cols[1]?.trim();               // "1962"
+          const rawMonth = cols[0]?.trim();
+          const rawYear = cols[1]?.trim();
           const title = cols[2]?.trim();
           const issue = cols[3]?.trim();
           const pencils = cols[4]?.trim();
           const inker = cols[5]?.trim();
           const grade = cols[6]?.trim();
-          const publisher = cols[7]?.trim().toLowerCase(); // "dc"
+          const rawPublisher = cols[7]?.trim();
           const imageFile = cols[8]?.trim();
 
-          // Only display Jan 1962 DC
+          const month = rawMonth?.toLowerCase();
+          const year = rawYear;
+          const publisher = rawPublisher?.toLowerCase();
+          const shortMonth = month?.slice(0, 3);
+
+          const folderPath = `https://musicsole.github.io/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/${imageFile}`;
+
+          // Debug output
+          console.log(`🔍 Row ${index + 2}:
+  month = "${month}"
+  year = "${year}"
+  publisher = "${publisher}"
+  image = "${imageFile}"
+  ➤ folder = ${folderPath}`);
+
+          // Strict filter: Jan 1962 DC
           if (month === 'january' && year === '1962' && publisher === 'dc' && imageFile) {
-            let imageUrl = '';
-
-            if (!imageFile.startsWith('http')) {
-              const shortMonth = month.slice(0, 3); // jan
-              imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/${imageFile}`;
-            } else {
-              imageUrl = imageFile;
-            }
-
             const div = document.createElement('div');
             div.className = 'cover';
 
             const img = document.createElement('img');
-            img.src = imageUrl;
+            img.src = folderPath;
             img.alt = `${title} #${issue}`;
             img.onerror = function () {
-              console.warn('Broken image URL:', this.src);
+              console.warn('❌ Broken image:', this.src);
               this.style.display = 'none';
             };
 
@@ -125,7 +131,7 @@
       })
       .catch(error => {
         document.getElementById('covers').innerHTML = 'Failed to load data.';
-        console.error('Error loading CSV:', error);
+        console.error('🚨 Error loading CSV:', error);
       });
   </script>
 </body>
