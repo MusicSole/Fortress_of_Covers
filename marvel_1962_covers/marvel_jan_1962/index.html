@@ -82,10 +82,10 @@
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
-          // Build proper image path if file name is relative
+          // Build full GitHub Pages path to image
           let imageUrl = '';
           if (imageFile && !imageFile.startsWith('http')) {
-            imageUrl = `/marvel_1962_covers/marvel_jan_1962/${imageFile}`;
+            imageUrl = `https://musicsole.github.io/Fortress_of_Covers/marvel_1962_covers/marvel_jan_1962/${imageFile}`;
           } else {
             imageUrl = imageFile;
           }
@@ -105,7 +105,7 @@
             let pencilerLink = '—';
             if (pencils) {
               const filename = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
-              pencilerLink = `<a href="/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
+              pencilerLink = `<a href="https://musicsole.github.io/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
             }
 
             const text = `
@@ -128,4 +128,3 @@
   </script>
 </body>
 </html>
-
