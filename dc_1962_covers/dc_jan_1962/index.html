@@ -1,987 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>DC Comics – January 1962 Covers</title>
-<style>
-body {
-background-color: #f8f6f2;
-color: #000000;
-font-family: Garamond, serif;
-padding: 20px;
-}
+  <meta charset="UTF-8" />
+  <title>DC Comics – January 1962 Covers</title>
+  <style>
+    body {
+      background-color: #f8f6f2;
+      color: #000000;
+      font-family: Garamond, serif;
+      padding: 20px;
+    }
 
-h1 {
-text-align: center;
-margin-bottom: 40px;
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
 
-.cover {
-display: inline-block;
-width: 240px;
-background-color: #ffffff;
-border-radius: 10px;
-padding: 10px;
-margin: 15px;
-text-align: left;
-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-transition: box-shadow 0.3s ease, transform 0.3s ease;
-border: 1px solid #ddd;
-}
+    .cover {
+      display: inline-block;
+      width: 240px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 15px;
+      text-align: left;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      border: 1px solid #ddd;
+    }
 
-.cover:hover {
-box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-transform: translateY(-5px);
-}
+    .cover:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
 
-img {
-width: 100%;
-height: auto;
-border-radius: 5px;
-}
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
 
-.cover p {
-margin: 5px 0;
-font-size: 14px;
-}
+    .cover p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
 
-.cover a {
-color: #003366;
-text-decoration: none;
-}
+    .cover a {
+      color: #003366;
+      text-decoration: none;
+    }
 
-.cover a:hover {
-text-decoration: underline;
-}
-</style>
+    .cover a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-<h1>DC Comics – January 1962 Covers</h1>
-<div id="covers">Loading...</div>
+  <h1>DC Comics – January 1962 Covers</h1>
+  <div id="covers">Loading...</div>
 
-<script>
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-fetch(SHEET_URL)
-.then(response => response.text())
-.then(data => {
-const rows = data.split('\n').slice(1);
-const container = document.getElementById('covers');
-container.innerHTML = '';
+    fetch(SHEET_URL)
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.split('\n').slice(1);
+        const container = document.getElementById('covers');
+        container.innerHTML = '';
 
-rows.forEach((row, index) => {
-const cols = row.split(',');
+        rows.forEach((row, index) => {
+          const cols = row.split(',');
 
-const rawMonth = cols[0]?.trim();
-const rawYear = cols[1]?.trim();
-const title = cols[2]?.trim();
-const issue = cols[3]?.trim();
-const pencils = cols[4]?.trim();
-const inker = cols[5]?.trim();
-const grade = cols[6]?.trim();
-const publisher = cols[7]?.trim().toLowerCase();
-const imageFile = cols[8]?.trim();
+          const rawMonth = cols[0]?.trim();
+          const rawYear = cols[1]?.trim();
+          const title = cols[2]?.trim();
+          const issue = cols[3]?.trim();
+          const pencils = cols[4]?.trim();
+          const inker = cols[5]?.trim();
+          const grade = cols[6]?.trim();
+          const publisher = cols[7]?.trim().toLowerCase();
+          const imageFile = cols[8]?.trim();
 
-const month = rawMonth?.toLowerCase();
-const year = rawYear;
-const publisher = rawPublisher?.toLowerCase();
-const shortMonth = month?.slice(0, 3);
+          const month = rawMonth?.toLowerCase();
+          const year = rawYear;
+          const shortMonth = month?.slice(0, 3);
 
-const folderPath = `https://musicsole.github.io/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/${imageFile}`;
+          const folderPath = `https://musicsole.github.io/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/${imageFile}`;
 
-// Debug output
-console.log(`🔍 Row ${index + 2}:
+          console.log(`🔍 Row ${index + 2}:
 month = "${month}"
 year = "${year}"
 publisher = "${publisher}"
 image = "${imageFile}"
 ➤ folder = ${folderPath}`);
 
-// Strict filter: January 1962 DC
-if (month === 'january' && year === '1962' && publisher === 'dc' && imageFile) {
-const div = document.createElement('div');
-div.className = 'cover';
+          // Filter: January 1962 DC
+          if (month === 'january' && year === '1962' && publisher === 'dc' && imageFile) {
+            const div = document.createElement('div');
+            div.className = 'cover';
 
-const img = document.createElement('img');
-img.src = folderPath;
-img.alt = `${title} #${issue}`;
-img.onerror = function () {
-console.warn('❌ Broken image:', this.src);
-this.style.display = 'none';
-};
+            const img = document.createElement('img');
+            img.src = folderPath;
+            img.alt = `${title} #${issue}`;
+            img.onerror = function () {
+              console.warn('❌ Broken image:', this.src);
+              this.style.display = 'none';
+            };
 
-let pencilerLink = '—';
-if (pencils) {
-const filename = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
-pencilerLink = `<a href="https://musicsole.github.io/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
-}
+            let pencilerLink = '—';
+            if (pencils) {
+              const filename = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+              pencilerLink = `<a href="https://musicsole.github.io/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
+            }
 
-const text = `
-<p><strong>${title} #${issue}</strong></p>
-<p>Pencils: ${pencilerLink}</p>
-<p>Inker: ${inker || '—'}</p>
-<p>Grade: ${grade || '—'}</p>
-`;
+            const text = `
+              <p><strong>${title} #${issue}</strong></p>
+              <p>Pencils: ${pencilerLink}</p>
+              <p>Inker: ${inker || '—'}</p>
+              <p>Grade: ${grade || '—'}</p>
+            `;
 
-div.appendChild(img);
-div.innerHTML += text;
-container.appendChild(div);
-}
-});
-})
-.catch(error => {
-document.getElementById('covers').innerHTML = 'Failed to load data.';
-console.error('🚨 Error loading CSV:', error);
-});
-</script>
+            div.appendChild(img);
+            div.innerHTML += text;
+            container.appendChild(div);
+          }
+        });
+      })
+      .catch(error => {
+        document.getElementById('covers').innerHTML = 'Failed to load data.';
+        console.error('🚨 Error loading CSV:', error);
+      });
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
