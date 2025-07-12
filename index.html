@@ -62,34 +62,34 @@
     }
 
     .shooting-star {
-  position: fixed;
-  top: 20%;
-  left: -100px;
-  width: 2px;
-  height: 2px;
-  background: white;
-  box-shadow: 0 0 10px 2px white;
-  animation: shoot 2s linear forwards;
-  z-index: 9999;
-  opacity: 0.8;
-  transform: rotate(45deg);
-}
+      position: fixed;
+      top: 20%;
+      left: -100px;
+      width: 2px;
+      height: 2px;
+      background: white;
+      box-shadow: 0 0 10px 2px white;
+      animation: shoot 2s linear forwards;
+      z-index: 9999;
+      opacity: 0.8;
+      transform: rotate(45deg);
+    }
 
     @keyframes shoot {
-  0% {
-    left: -100px;
-    top: 20%;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    left: 110%;
-    top: 80%;
-    opacity: 0;
-  }
-}
+      0% {
+        left: -100px;
+        top: 20%;
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        left: 110%;
+        top: 80%;
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -146,11 +146,10 @@
       }
 
       const publisher = rawPublisher.toLowerCase();
-      const folder = `${publisher}_1961_covers`; // Always reference 4-digit year (this can be changed to `${publisher}_${year}_covers` if you have other years)
-
-      const page = `${publisher}_${month}_${year}`; // ✅ Uses full year (e.g., marvel_jun_1961)
-
+      const folder = `${publisher}_${year}_covers`; // ✅ FIXED: uses dynamic year
+      const page = `${publisher}_${month}_${year}`;
       const url = `${folder}/${page}/`;
+
       window.location.href = url;
     }
   </script>
