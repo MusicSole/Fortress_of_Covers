@@ -82,20 +82,12 @@
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
-          // Build full GitHub Pages path to image
-          let imageUrl = '';
-          if (imageFile && !imageFile.startsWith('http')) {
-            imageUrl = `https://musicsole.github.io/Fortress_of_Covers/marvel_1962_covers/marvel_jan_1962/${imageFile}`;
-          } else {
-            imageUrl = imageFile;
-          }
-
-          if (month === 'january' && year === '1962' && publisher === 'marvel' && imageUrl) {
+          if (month === 'january' && year === '1962' && publisher === 'marvel' && imageFile) {
             const div = document.createElement('div');
             div.className = 'cover';
 
             const img = document.createElement('img');
-            img.src = imageUrl;
+            img.src = `https://musicsole.github.io/Fortress_of_Covers/marvel_1962_covers/marvel_jan_1962/${imageFile}`;
             img.alt = `${title} #${issue}`;
             img.onerror = function () {
               console.warn('Broken image URL:', this.src);
