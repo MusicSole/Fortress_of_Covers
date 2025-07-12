@@ -6,6 +6,10 @@
   <style>
     body {
       background-color: #f8f6f2;
+      background-image: url('assets/kirby.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
       color: #000000;
       font-family: Garamond, serif;
       padding: 20px;
@@ -14,6 +18,10 @@
     h1 {
       text-align: center;
       margin-bottom: 40px;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 10px;
     }
 
     .cover {
@@ -60,7 +68,6 @@
   <div id="covers">Loading covers...</div>
 
   <script>
-    // Detect artist from filename
     const pathParts = window.location.pathname.split('/');
     const filename = pathParts[pathParts.length - 1];
     const artistParam = filename.replace('.html', '').toLowerCase();
@@ -69,7 +76,6 @@
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    // Convert month abbreviation to full name (e.g. "jun" -> "June")
     function convertMonthToFullName(monthAbbrev) {
       const monthMap = {
         jan: 'January', feb: 'February', mar: 'March', apr: 'April',
@@ -102,7 +108,6 @@
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
-          // Normalize penciler
           const normalizedPenciler = pencils?.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
           if (normalizedPenciler === artistParam) {
