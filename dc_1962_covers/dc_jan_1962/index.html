@@ -24,9 +24,9 @@
       padding: 10px;
       margin: 15px;
       text-align: left;
+      border: 1px solid #ddd;
       box-shadow: 0 0 0 rgba(0, 0, 0, 0);
       transition: box-shadow 0.3s ease, transform 0.3s ease;
-      border: 1px solid #ddd;
     }
 
     .cover:hover {
@@ -36,102 +36,71 @@
 
     img {
       width: 100%;
-      height: auto;
       border-radius: 5px;
     }
 
-    .cover p {
-      margin: 5px 0;
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .info {
       font-size: 14px;
-    }
-
-    .cover a {
-      color: #003366;
-      text-decoration: none;
-    }
-
-    .cover a:hover {
-      text-decoration: underline;
+      color: #555;
     }
   </style>
-
-  <!-- ✅ Include PapaParse -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
-
 <body>
   <h1>DC Comics – January 1962 Covers</h1>
-  <div id="covers">Loading...</div>
+  <div id="covers"></div>
 
   <script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
-    fetch(SHEET_URL)
+    fetch(sheetURL)
       .then(response => response.text())
-      .then(csvText => {
-        const results = Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true
-        });
-
-        const rows = results.data;
+      .then(data => {
+        const rows = data.split('\n').slice(1);
         const container = document.getElementById('covers');
-        container.innerHTML = '';
 
-        rows.forEach((row, index) => {
-          const rawMonth = row['Month']?.trim();
-          const rawYear = row['Year']?.trim();
-          const title = row['Title']?.trim();
-          const issue = row['Issue']?.trim();
-          const pencils = row['Pencils']?.trim();
-          const inker = row['Inker']?.trim();
-          const grade = row['Grade']?.trim();
-          const publisher = row['Publisher']?.trim().toLowerCase();
-          const imageFile = row['ImageFile']?.trim();
+        rows.forEach(row => {
+          const cols = row.split(',');
+
+          const rawMonth = cols[0]?.trim();
+          const rawYear = cols[1]?.trim();
+          const title = cols[2]?.trim();
+          const issue = cols[3]?.trim();
+          const artist = cols[4]?.trim();
+          const writer = cols[5]?.trim();
+          const notes = cols[6]?.trim();
+          const publisher = cols[7]?.trim().toLowerCase(); // "dc" or "marvel"
+          const imageFile = cols[8]?.trim();
 
           const month = rawMonth?.toLowerCase();
           const year = rawYear;
-          const shortMonth = month?.slice(0, 3);
+          const shortMonth = rawMonth?.slice(0, 3).toLowerCase();
 
-          const folderPath = `https://musicsole.github.io/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/${imageFile}`;
+          // Filter: only show DC comics from January 1962
+          if (publisher === 'dc' && rawMonth.toLowerCase() === 'january' && rawYear === '1962') {
+            const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/`;
+            const imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}${imageFile}`;
 
-          // Console debug
-          console.log(`🔍 Row ${index + 2} ➤ ${folderPath}`);
+            const cover = document.createElement('div');
+            cover.className = 'cover';
 
-          if (month === 'january' && year === '1962' && publisher === 'dc' && imageFile) {
-            const div = document.createElement('div');
-            div.className = 'cover';
-
-            const img = document.createElement('img');
-            img.src = folderPath;
-            img.alt = `${title} #${issue}`;
-            img.onerror = function () {
-              console.warn('❌ Broken image:', this.src);
-              this.style.display = 'none';
-            };
-
-            let pencilerLink = '—';
-            if (pencils) {
-              const filename = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
-              pencilerLink = `<a href="https://musicsole.github.io/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
-            }
-
-            const text = `
-              <p><strong>${title} #${issue}</strong></p>
-              <p>Pencils: ${pencilerLink}</p>
-              <p>Inker: ${inker || '—'}</p>
-              <p>Grade: ${grade || '—'}</p>
+            cover.innerHTML = `
+              <img src="${imageUrl}" alt="${title} Cover" />
+              <div class="title">${title}</div>
+              <div class="info">Issue: ${issue}</div>
+              <div class="info">Artist: ${artist}</div>
+              <div class="info">Writer: ${writer}</div>
+              <div class="info">Notes: ${notes}</div>
             `;
 
-            div.appendChild(img);
-            div.innerHTML += text;
-            container.appendChild(div);
+            container.appendChild(cover);
           }
         });
-      })
-      .catch(error => {
-        document.getElementById('covers').innerHTML = 'Failed to load data.';
-        console.error('🚨 Error loading CSV:', error);
       });
   </script>
 </body>
