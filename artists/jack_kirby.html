@@ -6,10 +6,6 @@
   <style>
     body {
       background-color: #f8f6f2;
-      background-image: url('assets/kirby.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center center;
       color: #000000;
       font-family: Garamond, serif;
       padding: 20px;
@@ -18,10 +14,6 @@
     h1 {
       text-align: center;
       margin-bottom: 40px;
-      background-color: rgba(255, 255, 255, 0.8);
-      display: inline-block;
-      padding: 10px 20px;
-      border-radius: 10px;
     }
 
     .cover {
@@ -68,6 +60,7 @@
   <div id="covers">Loading covers...</div>
 
   <script>
+    // Detect artist from filename
     const pathParts = window.location.pathname.split('/');
     const filename = pathParts[pathParts.length - 1];
     const artistParam = filename.replace('.html', '').toLowerCase();
@@ -75,16 +68,6 @@
     document.getElementById('artistName').textContent = `${displayName} – Comic Covers`;
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
-
-    function convertMonthToFullName(monthAbbrev) {
-      const monthMap = {
-        jan: 'January', feb: 'February', mar: 'March', apr: 'April',
-        may: 'May', jun: 'June', jul: 'July', aug: 'August',
-        sep: 'September', oct: 'October', nov: 'November', dec: 'December'
-      };
-      const cleaned = monthAbbrev?.toLowerCase().replace(/["']/g, '').trim();
-      return monthMap[cleaned] || '?';
-    }
 
     fetch(SHEET_URL)
       .then(response => response.text())
@@ -98,7 +81,7 @@
         rows.forEach(row => {
           const cols = row.split(',');
 
-          const rawMonth = cols[0]?.trim();
+          const month = cols[0]?.trim().toLowerCase();
           const year = cols[1]?.trim();
           const title = cols[2]?.trim();
           const issue = cols[3]?.trim();
@@ -108,16 +91,15 @@
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
+          // Match artist
           const normalizedPenciler = pencils?.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
           if (normalizedPenciler === artistParam) {
             found = true;
 
-            const monthFull = convertMonthToFullName(rawMonth);
-
             let imageUrl = '';
             if (imageFile && !imageFile.startsWith('http')) {
-              imageUrl = `/${publisher}_1961_covers/${publisher}_${rawMonth.toLowerCase()}_${year}/${imageFile}`;
+              imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
             } else {
               imageUrl = imageFile;
             }
@@ -135,7 +117,6 @@
 
             const text = `
               <p><strong>${title} #${issue}</strong></p>
-              <p>${monthFull} ${year}</p>
               <p>Pencils: ${pencils || '—'}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
