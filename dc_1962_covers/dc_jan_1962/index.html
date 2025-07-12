@@ -1,1 +1,139 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DC Comics – January 1962 Covers</title>
+  <style>
+    body {
+      background-color: #f8f6f2;
+      color: #000000;
+      font-family: Garamond, serif;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .cover {
+      display: inline-block;
+      width: 240px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 15px;
+      text-align: left;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      border: 1px solid #ddd;
+    }
+
+    .cover:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    .cover p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .cover a {
+      color: #003366;
+      text-decoration: none;
+    }
+
+    .cover a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- ✅ Include PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+  <h1>DC Comics – January 1962 Covers</h1>
+  <div id="covers">Loading...</div>
+
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+
+    fetch(SHEET_URL)
+      .then(response => response.text())
+      .then(csvText => {
+        const results = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const rows = results.data;
+        const container = document.getElementById('covers');
+        container.innerHTML = '';
+
+        rows.forEach((row, index) => {
+          const rawMonth = row['Month']?.trim();
+          const rawYear = row['Year']?.trim();
+          const title = row['Title']?.trim();
+          const issue = row['Issue']?.trim();
+          const pencils = row['Pencils']?.trim();
+          const inker = row['Inker']?.trim();
+          const grade = row['Grade']?.trim();
+          const publisher = row['Publisher']?.trim().toLowerCase();
+          const imageFile = row['ImageFile']?.trim();
+
+          const month = rawMonth?.toLowerCase();
+          const year = rawYear;
+          const shortMonth = month?.slice(0, 3);
+
+          const folderPath = `https://musicsole.github.io/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}/${imageFile}`;
+
+          // Console debug
+          console.log(`🔍 Row ${index + 2} ➤ ${folderPath}`);
+
+          if (month === 'january' && year === '1962' && publisher === 'dc' && imageFile) {
+            const div = document.createElement('div');
+            div.className = 'cover';
+
+            const img = document.createElement('img');
+            img.src = folderPath;
+            img.alt = `${title} #${issue}`;
+            img.onerror = function () {
+              console.warn('❌ Broken image:', this.src);
+              this.style.display = 'none';
+            };
+
+            let pencilerLink = '—';
+            if (pencils) {
+              const filename = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+              pencilerLink = `<a href="https://musicsole.github.io/Fortress_of_Covers/artists/${filename}.html">${pencils}</a>`;
+            }
+
+            const text = `
+              <p><strong>${title} #${issue}</strong></p>
+              <p>Pencils: ${pencilerLink}</p>
+              <p>Inker: ${inker || '—'}</p>
+              <p>Grade: ${grade || '—'}</p>
+            `;
+
+            div.appendChild(img);
+            div.innerHTML += text;
+            container.appendChild(div);
+          }
+        });
+      })
+      .catch(error => {
+        document.getElementById('covers').innerHTML = 'Failed to load data.';
+        console.error('🚨 Error loading CSV:', error);
+      });
+  </script>
+</body>
+</html>
