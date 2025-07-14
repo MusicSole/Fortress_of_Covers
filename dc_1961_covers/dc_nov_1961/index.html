@@ -109,7 +109,11 @@
             }
 
             const text = `
-              <p><strong>${title} #${issue}</strong></p>
+              p>
+  <a href="/Fortress_of_Covers/titles/${title.toLowerCase().replace(/\s+/g, '_')}.html">
+    <strong>${title} #${issue}</strong>
+  </a>
+</p>
               <p>Pencils: ${pencilerLink}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
