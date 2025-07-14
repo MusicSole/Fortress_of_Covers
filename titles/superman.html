@@ -55,81 +55,43 @@
   </style>
 </head>
 <body>
-  <h1 id="titleHeader">Loading Title...</h1>
-  <div id="covers">Loading covers...</div>
+  <h1>Superman – Comic Covers</h1>
+  <div id="coverContainer">Loading covers...</div>
 
   <script>
-    const pathParts = window.location.pathname.split('/');
-    const filename = pathParts[pathParts.length - 1];
-    const titleParam = filename.replace('.html', '').toLowerCase(); // e.g., 'superman'
-    const displayTitle = titleParam.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    document.getElementById('titleHeader').textContent = `${displayTitle} – Comic Covers`;
-
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
-
-    fetch(SHEET_URL)
+    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv')
       .then(response => response.text())
       .then(data => {
-        const rows = data.split('\n').slice(1);
-        const container = document.getElementById('covers');
-        container.innerHTML = '';
-
-        let found = false;
+        const rows = data.trim().split('\n').slice(1);
+        const container = document.getElementById('coverContainer');
 
         rows.forEach(row => {
           const cols = row.split(',');
+          const title = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
+          if (title === 'superman') {
+            const issue = cols[3]?.trim();
+            const penciler = cols[4]?.trim();
+            const inker = cols[5]?.trim();
+            const grade = cols[6]?.trim();
+            const imageURL = cols[8]?.trim();
 
-          const month = cols[0]?.trim().toLowerCase();
-          const year = cols[1]?.trim();
-          const rawTitle = cols[2]?.trim();
-          const issue = cols[3]?.trim();
-          const pencils = cols[4]?.trim();
-          const inker = cols[5]?.trim();
-          const grade = cols[6]?.trim();
-          const publisher = cols[7]?.trim().toLowerCase();
-          const imageFile = cols[8]?.trim();
-
-          const normalizedTitle = rawTitle?.toLowerCase().replace(/\s+/g, '_');
-
-          if (normalizedTitle !== titleParam) return;
-
-          found = true;
-
-          const shortMonth = month.slice(0, 3);
-const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}`;
-const imageUrl = `/Fortress_of_Covers/${folder}/${imageFile}`;
-
-          const pencilerSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
-
-          const div = document.createElement('div');
-          div.className = 'cover';
-
-          const img = document.createElement('img');
-          img.src = imageUrl;
-          img.alt = `${rawTitle} #${issue}`;
-          img.onerror = function () {
-            console.warn('Broken image URL:', this.src);
-            this.style.display = 'none';
-          };
-
-          const text = `
-            <p><strong>${rawTitle} #${issue}</strong></p>
-            <p>Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${pencils}</a></p>
-            <p>Inker: ${inker || '—'}</p>
-            <p>Grade: ${grade || '—'}</p>
-          `;
-
-          div.appendChild(img);
-          div.innerHTML += text;
-          container.appendChild(div);
+            const div = document.createElement('div');
+            div.className = 'cover';
+            div.innerHTML = `
+              <img src="${imageURL}" alt="Superman #${issue}" onerror="this.style.display='none'">
+              <p>
+                <strong>Superman #${issue}</strong><br>
+                Pencils: <a href="/Fortress_of_Covers/artists/${penciler.toLowerCase().replaceAll(' ', '_')}.html">${penciler}</a><br>
+                Inks: ${inker || '—'}<br>
+                Grade: ${grade || '—'}
+              </p>
+            `;
+            container.appendChild(div);
+          }
         });
-
-        if (!found) {
-          container.innerHTML = `<p>No covers found for ${displayTitle}.</p>`;
-        }
       })
       .catch(error => {
-        document.getElementById('covers').innerHTML = 'Failed to load data.';
+        document.getElementById('coverContainer').innerText = 'Failed to load covers.';
         console.error('Error loading CSV:', error);
       });
   </script>
