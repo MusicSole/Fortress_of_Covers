@@ -60,7 +60,7 @@
 
   <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
-    const titleName = 'superman'; // this must match column C exactly (lowercase)
+    const titleName = 'superman'; // matches column C (title) in lowercase
 
     fetch(SHEET_URL)
       .then(response => response.text())
@@ -72,19 +72,20 @@
         rows.forEach(row => {
           const cols = row.split(',');
 
-          const title = cols[2]?.trim().toLowerCase();
-          if (title !== titleName) return;
-
           const month = cols[0]?.trim();
           const year = cols[1]?.trim();
+          const title = cols[2]?.trim().toLowerCase();
           const issue = cols[3]?.trim();
           const pencils = cols[4]?.trim();
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
+          if (title !== titleName || !imageFile) return;
+
           const shortMonth = month.toLowerCase().slice(0, 3);
           const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}`;
-          const imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}/${imageFile}`;
+          const cleanImageFile = imageFile.replace(/^"|"$/g, '').trim();
+          const imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}/${cleanImageFile}`;
 
           const artistSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
@@ -92,7 +93,7 @@
           div.className = 'cover';
 
           div.innerHTML = `
-            <img src="${imageUrl}" alt="${titleName} ${issue}">
+            <img src="${imageUrl}" alt="${titleName} ${issue}" onerror="this.style.display='none'">
             <div class="info">
               <strong>${titleName.replace(/_/g, ' ').toUpperCase()} #${issue}</strong><br>
               ${month} ${year}<br>
