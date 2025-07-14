@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Titles Index</title>
+</head>
+<body>
+  <h1>Comic Titles</h1>
+  <ul id="title-list"></ul>
+
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(csv => {
+        const lines = csv.trim().split('\n').slice(1); // skip header row
+        const titles = new Set();
+
+        for (let line of lines) {
+          const cols = line.split(',');
+          const title = cols[2]?.trim();
+          if (title) {
+            titles.add(title.toLowerCase().replace(/\s+/g, '_')); // normalized
+          }
+        }
+
+        const sorted = Array.from(titles).sort();
+        const list = document.getElementById('title-list');
+
+        sorted.forEach(name => {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = `/Fortress_of_Covers/titles/${name}.html`;
+          link.textContent = name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          item.appendChild(link);
+          list.appendChild(item);
+        });
+      })
+      .catch(err => {
+        console.error('Error loading titles:', err);
+        document.getElementById('title-list').innerHTML = '<li>Failed to load titles.</li>';
+      });
+  </script>
+</body>
+</html>
 
