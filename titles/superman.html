@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Title – Comic Covers</title>
+  <title>Superman – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -24,9 +24,9 @@
       padding: 10px;
       margin: 15px;
       text-align: left;
+      border: 1px solid #ddd;
       box-shadow: 0 0 0 rgba(0, 0, 0, 0);
       transition: box-shadow 0.3s ease, transform 0.3s ease;
-      border: 1px solid #ddd;
     }
 
     .cover:hover {
@@ -36,7 +36,6 @@
 
     img {
       width: 100%;
-      height: auto;
       border-radius: 5px;
     }
 
@@ -56,15 +55,15 @@
   </style>
 </head>
 <body>
-  <h1 id="titleName">Loading Title...</h1>
+  <h1 id="titleHeader">Loading Title...</h1>
   <div id="covers">Loading covers...</div>
 
   <script>
     const pathParts = window.location.pathname.split('/');
     const filename = pathParts[pathParts.length - 1];
-    const titleParam = filename.replace('.html', '').toLowerCase(); // e.g., superman
+    const titleParam = filename.replace('.html', '').toLowerCase(); // e.g., 'superman'
     const displayTitle = titleParam.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    document.getElementById('titleName').textContent = `${displayTitle} – Comic Covers`;
+    document.getElementById('titleHeader').textContent = `${displayTitle} – Comic Covers`;
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
@@ -80,34 +79,45 @@
         rows.forEach(row => {
           const cols = row.split(',');
 
-          const rawTitle = cols[2]?.trim().replace(/^"|"$/g, '').toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle !== titleParam) return;
-
-          found = true;
-
           const month = cols[0]?.trim().toLowerCase();
           const year = cols[1]?.trim();
+          const rawTitle = cols[2]?.trim();
           const issue = cols[3]?.trim();
           const pencils = cols[4]?.trim();
           const inker = cols[5]?.trim();
           const grade = cols[6]?.trim();
           const publisher = cols[7]?.trim().toLowerCase();
-          const imageFile = cols[8]?.trim().replace(/^"|"$/g, '');
+          const imageFile = cols[8]?.trim();
+
+          const normalizedTitle = rawTitle?.toLowerCase().replace(/\s+/g, '_');
+
+          if (normalizedTitle !== titleParam) return;
+
+          found = true;
 
           const imageUrl = `/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${month}_${year}/${imageFile}`;
-
           const pencilerSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+
           const div = document.createElement('div');
           div.className = 'cover';
 
-          div.innerHTML = `
-            <img src="${imageUrl}" alt="${rawTitle} #${issue}" onerror="this.style.display='none'">
-            <p><strong>${displayTitle} #${issue}</strong></p>
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          img.alt = `${rawTitle} #${issue}`;
+          img.onerror = function () {
+            console.warn('Broken image URL:', this.src);
+            this.style.display = 'none';
+          };
+
+          const text = `
+            <p><strong>${rawTitle} #${issue}</strong></p>
             <p>Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${pencils}</a></p>
             <p>Inker: ${inker || '—'}</p>
             <p>Grade: ${grade || '—'}</p>
           `;
 
+          div.appendChild(img);
+          div.innerHTML += text;
           container.appendChild(div);
         });
 
