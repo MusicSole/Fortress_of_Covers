@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Comic Titles Index</title>
   <style>
     body {
@@ -48,33 +48,40 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
     fetch(SHEET_URL)
-      .then(response => response.text())
-      .then(data => {
-        const rows = data.split('\n').slice(1); // skip header
+      .then(res => res.text())
+      .then(text => {
+        const lines = text.trim().split('\n').slice(1); // Skip header
         const titles = new Set();
 
-        rows.forEach(row => {
-          const cols = row.split(',');
-          const title = cols[2]?.trim();
-          if (title) titles.add(title);
+        lines.forEach(line => {
+          const cols = line.split(',');
+          if (cols.length > 2) {
+            const title = cols[2].trim();
+            if (title) {
+              titles.add(title);
+            }
+          }
         });
 
-        const sortedTitles = Array.from(titles).sort((a, b) => a.localeCompare(b));
+        const sorted = Array.from(titles).sort();
         const ul = document.getElementById('titleList');
         ul.innerHTML = '';
 
-        sortedTitles.forEach(title => {
-          const filename = title.toLowerCase().replaceAll(' ', '_').replace(/[^\w_]/g, '') + '.html';
+        sorted.forEach(title => {
+          const filename = title.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.html';
           const li = document.createElement('li');
           li.innerHTML = `<a href="/Fortress_of_Covers/titles/${filename}">${title}</a>`;
           ul.appendChild(li);
         });
+
+        if (sorted.length === 0) {
+          ul.innerHTML = '<li>No titles found.</li>';
+        }
       })
-      .catch(error => {
-        console.error('Error loading CSV:', error);
+      .catch(err => {
+        console.error(err);
         document.getElementById('titleList').innerHTML = '<li>Failed to load titles.</li>';
       });
   </script>
 </body>
 </html>
-
