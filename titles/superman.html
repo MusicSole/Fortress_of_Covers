@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Superman – Comic Covers</title>
+  <title>Superman – Fortress of Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -30,101 +30,75 @@
     }
 
     .cover:hover {
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transform: scale(1.03);
     }
 
     img {
       width: 100%;
-      height: auto;
       border-radius: 5px;
     }
 
-    .cover p {
-      margin: 5px 0;
-      font-size: 14px;
+    .info {
+      margin-top: 10px;
+      font-size: 0.9em;
     }
 
-    .cover a {
-      color: #003366;
+    .info a {
+      color: #004aad;
       text-decoration: none;
     }
 
-    .cover a:hover {
+    .info a:hover {
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>Superman – Comic Covers</h1>
-  <div id="covers">Loading covers...</div>
+  <h1>Superman Covers</h1>
+  <div id="covers"></div>
 
   <script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+    const titleName = 'superman'; // <-- change for each title page
 
-    fetch(SHEET_URL)
+    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv')
       .then(response => response.text())
-      .then(data => {
-        const rows = data.split('\n').slice(1);
+      .then(csv => {
+        const rows = csv.split('\n').slice(1); // skip header
         const container = document.getElementById('covers');
-        container.innerHTML = '';
-
-        let found = false;
 
         rows.forEach(row => {
           const cols = row.split(',');
 
+          const title = cols[2]?.trim().toLowerCase();
+          if (title !== titleName) return;
+
+          const publisher = cols[7]?.trim().toLowerCase();
           const month = cols[0]?.trim().toLowerCase();
           const year = cols[1]?.trim();
-          const title = cols[2]?.trim().toLowerCase();
-          const issue = cols[3]?.trim();
-          const pencils = cols[4]?.trim();
-          const inker = cols[5]?.trim();
-          const grade = cols[6]?.trim();
-          const publisher = cols[7]?.trim().toLowerCase();
+          const shortMonth = month.slice(0, 3);
           const imageFile = cols[8]?.trim();
+          const issue = cols[3]?.trim();
+          const artist = cols[4]?.trim();
+          const artistSlug = artist.toLowerCase().replace(/ /g, '_');
 
-          if (title === 'superman') {
-            found = true;
+          const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}`;
+          const imgUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}/${imageFile}`;
 
-            let imageUrl = '';
-            if (imageFile && !imageFile.startsWith('http')) {
-              imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
-            } else {
-              imageUrl = imageFile;
-            }
+          const div = document.createElement('div');
+          div.className = 'cover';
 
-            const div = document.createElement('div');
-            div.className = 'cover';
+          div.innerHTML = `
+            <img src="${imgUrl}" alt="${title} ${issue}">
+            <div class="info">
+              <strong>${titleName.replace(/_/g, ' ').toUpperCase()} #${issue}</strong><br>
+              ${month} ${year}<br>
+              <a href="/Fortress_of_Covers/artists/${artistSlug}.html">${artist}</a>
+            </div>
+          `;
 
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = `Superman #${issue}`;
-            img.onerror = function () {
-              console.warn('Broken image URL:', this.src);
-              this.style.display = 'none';
-            };
-
-            const text = `
-              <p><strong>Superman #${issue}</strong></p>
-              <p>Pencils: ${pencils || '—'}</p>
-              <p>Inker: ${inker || '—'}</p>
-              <p>Grade: ${grade || '—'}</p>
-            `;
-
-            div.appendChild(img);
-            div.innerHTML += text;
-            container.appendChild(div);
-          }
+          container.appendChild(div);
         });
-
-        if (!found) {
-          container.innerHTML = `<p>No covers found for Superman.</p>`;
-        }
-      })
-      .catch(error => {
-        document.getElementById('covers').innerHTML = 'Failed to load data.';
-        console.error('Error loading CSV:', error);
       });
   </script>
 </body>
