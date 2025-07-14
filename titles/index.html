@@ -49,38 +49,37 @@
 
     fetch(SHEET_URL)
       .then(res => res.text())
-      .then(text => {
-        const lines = text.trim().split('\n').slice(1); // Skip header
-        const titles = new Set();
+      .then(csv => {
+        const lines = csv.trim().split('\n').slice(1); // skip header
+        const titlesSet = new Set();
 
-        lines.forEach(line => {
+        for (let line of lines) {
           const cols = line.split(',');
-          if (cols.length > 2) {
-            const title = cols[2].trim();
-            if (title) {
-              titles.add(title);
-            }
-          }
-        });
+          const title = cols[2]?.trim(); // Column C
+          if (title) titlesSet.add(title);
+        }
 
-        const sorted = Array.from(titles).sort();
+        const sortedTitles = Array.from(titlesSet).sort();
         const ul = document.getElementById('titleList');
         ul.innerHTML = '';
 
-        sorted.forEach(title => {
-          const filename = title.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.html';
+        sortedTitles.forEach(title => {
+          const safeFile = title
+            .toLowerCase()
+            .replace(/\s+/g, '_')
+            .replace(/[^\w_]/g, ''); // Only keep letters, numbers, _
           const li = document.createElement('li');
-          li.innerHTML = `<a href="/Fortress_of_Covers/titles/${filename}">${title}</a>`;
+          li.innerHTML = `<a href="/Fortress_of_Covers/titles/${safeFile}.html">${title}</a>`;
           ul.appendChild(li);
         });
 
-        if (sorted.length === 0) {
+        if (sortedTitles.length === 0) {
           ul.innerHTML = '<li>No titles found.</li>';
         }
       })
       .catch(err => {
         console.error(err);
-        document.getElementById('titleList').innerHTML = '<li>Failed to load titles.</li>';
+        document.getElementById('titleList').innerHTML = '<li>Error loading titles.</li>';
       });
   </script>
 </body>
