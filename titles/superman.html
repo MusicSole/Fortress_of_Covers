@@ -95,7 +95,10 @@
 
           found = true;
 
-          const imageUrl = `/Fortress_of_Covers/${publisher}_${year}_covers/${publisher}_${month}_${year}/${imageFile}`;
+          const shortMonth = month.slice(0, 3);
+const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}`;
+const imageUrl = `/Fortress_of_Covers/${folder}/${imageFile}`;
+
           const pencilerSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
           const div = document.createElement('div');
