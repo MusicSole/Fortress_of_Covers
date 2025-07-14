@@ -1,1 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Titles Index – Fortress of Covers</title>
+  <style>
+    body {
+      background-color: #f8f6f2;
+      color: #000000;
+      font-family: Garamond, serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 600px;
+      margin: auto;
+    }
+    li {
+      margin: 10px 0;
+      font-size: 1.2em;
+    }
+    a {
+      text-decoration: none;
+      color: #004aad;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Comic Titles</h1>
+  <ul id="title-list"></ul>
+
+  <script>
+    const titles = [
+      'action_comics',
+      'amazing_fantasy',
+      'avengers',
+      'batman',
+      'captain_america',
+      'detective_comics',
+      'fantastic_four',
+      'green_lantern',
+      'hulk',
+      'iron_man',
+      'justice_league',
+      'spider_man',
+      'superman',
+      'thor',
+      'wonder_woman'
+      // Add more titles here as needed
+    ];
+
+    const list = document.getElementById('title-list');
+
+    titles.forEach(title => {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = `./${title}.html`;
+      link.textContent = title.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+  </script>
+</body>
+</html>
 
