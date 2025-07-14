@@ -67,21 +67,28 @@
 
         rows.forEach(row => {
           const cols = row.split(',');
-          const title = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (title === 'superman') {
+
+          const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
+          if (rawTitle === 'superman') {
+            const month = cols[0]?.trim();
+            const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
             const penciler = cols[4]?.trim();
             const inker = cols[5]?.trim();
             const grade = cols[6]?.trim();
             const imageURL = cols[8]?.trim();
 
+            const pencilerSlug = penciler.toLowerCase().replaceAll(' ', '_');
+
             const div = document.createElement('div');
             div.className = 'cover';
+
             div.innerHTML = `
               <img src="${imageURL}" alt="Superman #${issue}" onerror="this.style.display='none'">
               <p>
                 <strong>Superman #${issue}</strong><br>
-                Pencils: <a href="/Fortress_of_Covers/artists/${penciler.toLowerCase().replaceAll(' ', '_')}.html">${penciler}</a><br>
+                ${month} ${year}<br>
+                Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${penciler}</a><br>
                 Inks: ${inker || '—'}<br>
                 Grade: ${grade || '—'}
               </p>
