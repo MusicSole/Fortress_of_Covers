@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Superman – Fortress of Covers</title>
+  <title>Title – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -30,84 +30,109 @@
     }
 
     .cover:hover {
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transform: scale(1.03);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
     }
 
     img {
       width: 100%;
+      height: auto;
       border-radius: 5px;
     }
 
-    .info {
-      margin-top: 10px;
-      font-size: 0.9em;
+    .cover p {
+      margin: 5px 0;
+      font-size: 14px;
     }
 
-    .info a {
-      color: #004aad;
+    .cover a {
+      color: #003366;
       text-decoration: none;
     }
 
-    .info a:hover {
+    .cover a:hover {
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>Superman Covers</h1>
-  <div id="covers">Loading...</div>
+  <h1 id="titleName">Loading Title...</h1>
+  <div id="covers">Loading covers...</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
+    // Detect title from filename
+    const pathParts = window.location.pathname.split('/');
+    const filename = pathParts[pathParts.length - 1];
+    const titleParam = filename.replace('.html', '').toLowerCase();
+    const displayTitle = titleParam.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    document.getElementById('titleName').textContent = `${displayTitle} – Comic Covers`;
+
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
-    const titleName = 'superman'; // match lowercase form of title
 
     fetch(SHEET_URL)
       .then(response => response.text())
-      .then(csv => {
-        const parsed = Papa.parse(csv, { header: true });
-        const rows = parsed.data;
+      .then(data => {
+        const rows = data.split('\n').slice(1);
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
+        let found = false;
+
         rows.forEach(row => {
-          const rawTitle = row['Title']?.trim().replace(/^"|"$/g, '');
-          const title = rawTitle?.toLowerCase();
-          if (title !== titleName) return;
+          const cols = row.split(',');
 
-          const month = row['Month']?.trim();
-          const year = row['Year']?.trim();
-          const issue = row['Issue']?.trim();
-          const pencils = row['Pencils']?.trim() || '—';
-          const publisher = row['Publisher']?.trim().toLowerCase();
-          const imageFile = row['Image']?.trim().replace(/^"|"$/g, '');
-          if (!imageFile) return;
+          const month = cols[0]?.trim().toLowerCase();
+          const year = cols[1]?.trim();
+          const title = cols[2]?.trim().toLowerCase().replace(/ /g, '_');
+          const issue = cols[3]?.trim();
+          const pencils = cols[4]?.trim();
+          const inker = cols[5]?.trim();
+          const grade = cols[6]?.trim();
+          const publisher = cols[7]?.trim().toLowerCase();
+          const imageFile = cols[8]?.trim();
 
-          const shortMonth = month.toLowerCase().slice(0, 3);
-          const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}`;
-          const imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}/${imageFile}`;
+          if (title === titleParam) {
+            found = true;
 
-          const artistSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+            let imageUrl = '';
+            if (imageFile && !imageFile.startsWith('http')) {
+              imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
+            } else {
+              imageUrl = imageFile;
+            }
 
-          const div = document.createElement('div');
-          div.className = 'cover';
+            const div = document.createElement('div');
+            div.className = 'cover';
 
-          div.innerHTML = `
-            <img src="${imageUrl}" alt="${rawTitle} #${issue}" onerror="this.style.display='none'">
-            <div class="info">
-              <strong>${rawTitle.toUpperCase()} #${issue}</strong><br>
-              ${month} ${year}<br>
-              <a href="/Fortress_of_Covers/artists/${artistSlug}.html">${pencils}</a>
-            </div>
-          `;
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `${displayTitle} #${issue}`;
+            img.onerror = function () {
+              console.warn('Broken image URL:', this.src);
+              this.style.display = 'none';
+            };
 
-          container.appendChild(div);
+            const pencilerSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
+            const text = `
+              <p><strong>${displayTitle} #${issue}</strong></p>
+              <p>Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${pencils}</a></p>
+              <p>Inker: ${inker || '—'}</p>
+              <p>Grade: ${grade || '—'}</p>
+            `;
+
+            div.appendChild(img);
+            div.innerHTML += text;
+            container.appendChild(div);
+          }
         });
+
+        if (!found) {
+          container.innerHTML = `<p>No covers found for ${displayTitle}.</p>`;
+        }
       })
       .catch(error => {
-        document.getElementById('covers').innerText = 'Failed to load covers.';
-        console.error(error);
+        document.getElementById('covers').innerHTML = 'Failed to load data.';
+        console.error('Error loading CSV:', error);
       });
   </script>
 </body>
