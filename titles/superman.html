@@ -58,34 +58,35 @@
   <h1>Superman Covers</h1>
   <div id="covers">Loading...</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
-    const titleName = 'superman'; // matches column C (title) in lowercase
+    const titleName = 'superman'; // match lowercase form of title
 
     fetch(SHEET_URL)
       .then(response => response.text())
-      .then(data => {
-        const rows = data.split('\n').slice(1);
+      .then(csv => {
+        const parsed = Papa.parse(csv, { header: true });
+        const rows = parsed.data;
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
         rows.forEach(row => {
-          const cols = row.split(',');
+          const rawTitle = row['Title']?.trim().replace(/^"|"$/g, '');
+          const title = rawTitle?.toLowerCase();
+          if (title !== titleName) return;
 
-          const month = cols[0]?.trim();
-          const year = cols[1]?.trim();
-          const title = cols[2]?.trim().toLowerCase();
-          const issue = cols[3]?.trim();
-          const pencils = cols[4]?.trim();
-          const publisher = cols[7]?.trim().toLowerCase();
-          const imageFile = cols[8]?.trim();
-
-          if (title !== titleName || !imageFile) return;
+          const month = row['Month']?.trim();
+          const year = row['Year']?.trim();
+          const issue = row['Issue']?.trim();
+          const pencils = row['Pencils']?.trim() || '—';
+          const publisher = row['Publisher']?.trim().toLowerCase();
+          const imageFile = row['Image']?.trim().replace(/^"|"$/g, '');
+          if (!imageFile) return;
 
           const shortMonth = month.toLowerCase().slice(0, 3);
           const folder = `${publisher}_${year}_covers/${publisher}_${shortMonth}_${year}`;
-          const cleanImageFile = imageFile.replace(/^"|"$/g, '').trim();
-          const imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}/${cleanImageFile}`;
+          const imageUrl = `https://musicsole.github.io/Fortress_of_Covers/${folder}/${imageFile}`;
 
           const artistSlug = pencils.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
@@ -93,9 +94,9 @@
           div.className = 'cover';
 
           div.innerHTML = `
-            <img src="${imageUrl}" alt="${titleName} ${issue}" onerror="this.style.display='none'">
+            <img src="${imageUrl}" alt="${rawTitle} #${issue}" onerror="this.style.display='none'">
             <div class="info">
-              <strong>${titleName.replace(/_/g, ' ').toUpperCase()} #${issue}</strong><br>
+              <strong>${rawTitle.toUpperCase()} #${issue}</strong><br>
               ${month} ${year}<br>
               <a href="/Fortress_of_Covers/artists/${artistSlug}.html">${pencils}</a>
             </div>
