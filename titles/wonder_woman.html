@@ -56,7 +56,6 @@
 </head>
 <body>
   <h1> Wonder Woman – Comic Covers</h1>
-  <div id="coverContainer">Loading covers...</div>
 
   <script>
     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv')
@@ -69,7 +68,7 @@
           const cols = row.split(',');
 
           const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle === 'wonder woman') {
+          if (rawTitle === 'wonder_woman') {
             const month = cols[0]?.trim();
             const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
