@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Artist – Comic Covers</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       background-color: #f8f6f2;
@@ -11,9 +10,14 @@
       font-family: Garamond, serif;
       padding: 20px;
     }
-    h1 { text-align: center; margin-bottom: 40px; }
-    #covers { display: flex; flex-wrap: wrap; justify-content: center; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
     .cover {
+      display: inline-block;
       width: 240px;
       background-color: #ffffff;
       border-radius: 10px;
@@ -24,11 +28,31 @@
       transition: box-shadow 0.3s ease, transform 0.3s ease;
       border: 1px solid #ddd;
     }
-    .cover:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.15); transform: translateY(-5px); }
-    img { width: 100%; height: auto; border-radius: 5px; }
-    .cover p { margin: 5px 0; font-size: 14px; }
-    .cover a { color: #003366; text-decoration: none; }
-    .cover a:hover { text-decoration: underline; }
+
+    .cover:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    .cover p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .cover a {
+      color: #003366;
+      text-decoration: none;
+    }
+
+    .cover a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -36,110 +60,81 @@
   <div id="covers">Loading covers...</div>
 
   <script>
-    // ---- CONFIG: update if your sheet URL changes ----
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
-
-    // --- Helper: slugify names the same way you store them ---
-    const toSlug = (s) => s
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '_')
-      .replace(/[^\w_]/g, '');
-
-    // 1) Preferred: read ?name=slug
-    const params = new URLSearchParams(window.location.search);
-    let artistParam = params.get('name');
-
-    // 2) Fallback: derive from filename if someone hits /artists/curt_swan.html
-    if (!artistParam) {
-      const parts = window.location.pathname.split('/');
-      const file = parts[parts.length - 1] || '';
-      if (file.endsWith('.html')) {
-        artistParam = file.replace('.html', '').toLowerCase();
-      }
-    }
-
-    if (!artistParam) {
-      document.getElementById('artistName').textContent = 'Artist – Comic Covers';
-      document.getElementById('covers').innerHTML = '<p>No artist specified. Use /artists/?name=first_last</p>';
-      throw new Error('No artist specified');
-    }
-
-    // Display name (Curt Swan)
+    // Detect artist from filename
+    const pathParts = window.location.pathname.split('/');
+    const filename = pathParts[pathParts.length - 1];
+    const artistParam = filename.replace('.html', '').toLowerCase();
     const displayName = artistParam.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     document.getElementById('artistName').textContent = `${displayName} – Comic Covers`;
 
-    // Fetch CSV and render
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
+
     fetch(SHEET_URL)
-      .then(r => r.text())
-      .then(text => {
-        // Simple CSV split (works if your fields don’t contain unescaped commas)
-        const rows = text.split('\n').slice(1);
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.split('\n').slice(1);
         const container = document.getElementById('covers');
         container.innerHTML = '';
 
-        let found = 0;
+        let found = false;
 
-        rows.forEach(line => {
-          if (!line.trim()) return;
-          const cols = line.split(',');
+        rows.forEach(row => {
+          const cols = row.split(',');
 
-          const month = cols[0]?.trim().toLowerCase();   // e.g., jan
-          const year = cols[1]?.trim();                  // e.g., 1982
+          const month = cols[0]?.trim().toLowerCase();
+          const year = cols[1]?.trim();
           const title = cols[2]?.trim();
           const issue = cols[3]?.trim();
           const pencils = cols[4]?.trim();
           const inker = cols[5]?.trim();
           const grade = cols[6]?.trim();
-          const publisher = cols[7]?.trim().toLowerCase(); // 'marvel' or 'dc'
-          const imageFile = cols[8]?.trim();               // file name or full URL
+          const publisher = cols[7]?.trim().toLowerCase();
+          const imageFile = cols[8]?.trim();
 
-          if (!pencils) return;
+          // Match artist
+          const normalizedPenciler = pencils?.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
-          const pencilerSlug = toSlug(pencils);
-          if (pencilerSlug !== artistParam) return;
+          if (normalizedPenciler === artistParam) {
+            found = true;
 
-          // Build image URL:
-          // If the sheet gives a full URL, use it. If it’s a file name, build a site-relative path.
-          let imageUrl = imageFile;
-          if (imageFile && !/^https?:\/\//i.test(imageFile)) {
-            // Make sure these folder names match your repo exactly:
-            // /dc_1961_covers/dc_jul_1961/<file>  OR  /marvel_1961_covers/marvel_jan_1982/<file>
-            imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
+            let imageUrl = '';
+            if (imageFile && !imageFile.startsWith('http')) {
+              imageUrl = `https://fortressofcovers.com/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
+            } else {
+              imageUrl = imageFile;
+            }
+
+            const div = document.createElement('div');
+            div.className = 'cover';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `${title} #${issue}`;
+            img.onerror = function () {
+              console.warn('Broken image URL:', this.src);
+              this.style.display = 'none';
+            };
+
+            const text = `
+              <p><strong>${title} #${issue}</strong></p>
+              <p>Pencils: ${pencils || '—'}</p>
+              <p>Inker: ${inker || '—'}</p>
+              <p>Grade: ${grade || '—'}</p>
+            `;
+
+            div.appendChild(img);
+            div.innerHTML += text;
+            container.appendChild(div);
           }
-
-          const card = document.createElement('div');
-          card.className = 'cover';
-
-          const img = document.createElement('img');
-          img.src = imageUrl;
-          img.alt = `${title || ''} #${issue || ''}`.trim();
-          img.loading = 'lazy';
-          img.referrerPolicy = 'no-referrer';
-          img.onerror = function () { this.style.display = 'none'; };
-
-          const info = document.createElement('div');
-          info.innerHTML = `
-            <p><strong>${title || '—'} ${issue ? ('#' + issue) : ''}</strong></p>
-            <p>Pencils: ${pencils || '—'}</p>
-            <p>Inker: ${inker || '—'}</p>
-            <p>Grade: ${grade || '—'}</p>
-            <p>${publisher && year ? publisher.toUpperCase() + ' ' + year : ''}</p>
-          `;
-
-          card.appendChild(img);
-          card.appendChild(info);
-          container.appendChild(card);
-          found++;
         });
 
         if (!found) {
           container.innerHTML = `<p>No covers found for ${displayName}.</p>`;
         }
       })
-      .catch(err => {
-        console.error(err);
+      .catch(error => {
         document.getElementById('covers').innerHTML = 'Failed to load data.';
+        console.error('Error loading CSV:', error);
       });
   </script>
 </body>
