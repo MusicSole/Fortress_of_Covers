@@ -69,7 +69,7 @@
           const cols = row.split(',');
 
           const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle === 'world's_finest') {
+          if (rawTitle === 'world's_finest_comics') {
             const month = cols[0]?.trim();
             const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
@@ -86,7 +86,7 @@
             div.innerHTML = `
               <img src="${imageURL}" alt="World's Finest #${issue}" onerror="this.style.display='none'">
               <p>
-                <strong>World's_Finest #${issue}</strong><br>
+                <strong>World's_Finest_Comics #${issue}</strong><br>
                 ${month} ${year}<br>
                 Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${penciler}</a><br>
                 Inks: ${inker || '—'}<br>
