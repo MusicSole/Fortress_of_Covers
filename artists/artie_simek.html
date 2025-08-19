@@ -16,6 +16,12 @@
       margin-bottom: 40px;
     }
 
+    #covers {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .cover {
       display: inline-block;
       width: 240px;
@@ -53,6 +59,12 @@
     .cover a:hover {
       text-decoration: underline;
     }
+
+    .date {
+      font-style: italic;
+      color: #444;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -69,6 +81,13 @@
 
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv';
 
+    // Helper: safe-capitalize month (e.g., "august" -> "Aug")
+    function prettyMonth(m) {
+      if (!m) return '—';
+      const s = m.trim().toLowerCase();
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
     fetch(SHEET_URL)
       .then(response => response.text())
       .then(data => {
@@ -79,6 +98,8 @@
         let found = false;
 
         rows.forEach(row => {
+          // NOTE: This simple split assumes fields don't contain commas.
+          // If your CSV has commas inside quoted fields, consider a CSV parser.
           const cols = row.split(',');
 
           const month = cols[0]?.trim().toLowerCase();
@@ -91,7 +112,7 @@
           const publisher = cols[7]?.trim().toLowerCase();
           const imageFile = cols[8]?.trim();
 
-          // Match artist
+          // Match artist via penciler column
           const normalizedPenciler = pencils?.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
           if (normalizedPenciler === artistParam) {
@@ -99,7 +120,7 @@
 
             let imageUrl = '';
             if (imageFile && !imageFile.startsWith('http')) {
-              imageUrl = `/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
+              imageUrl = `https://fortressofcovers.com/${publisher}_1961_covers/${publisher}_${month}_${year}/${imageFile}`;
             } else {
               imageUrl = imageFile;
             }
@@ -110,20 +131,24 @@
             const img = document.createElement('img');
             img.src = imageUrl;
             img.alt = `${title} #${issue}`;
+            img.loading = 'lazy';
             img.onerror = function () {
               console.warn('Broken image URL:', this.src);
               this.style.display = 'none';
             };
 
-            const text = `
-              <p><strong>${title} #${issue}</strong></p>
+            // Build info block including Month + Year line
+            const info = document.createElement('div');
+            info.innerHTML = `
+              <p><strong>${title || 'Untitled'}${issue ? ' #' + issue : ''}</strong></p>
+              <p class="date">${prettyMonth(month)} ${year || ''}</p>
               <p>Pencils: ${pencils || '—'}</p>
               <p>Inker: ${inker || '—'}</p>
               <p>Grade: ${grade || '—'}</p>
             `;
 
             div.appendChild(img);
-            div.innerHTML += text;
+            div.appendChild(info);
             container.appendChild(div);
           }
         });
@@ -139,6 +164,3 @@
   </script>
 </body>
 </html>
-
-
-
