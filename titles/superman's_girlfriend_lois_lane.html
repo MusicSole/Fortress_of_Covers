@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Action Comics – Comic Covers</title>
+  <title>Superman's Girlfriend Lois Lane – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -55,7 +55,7 @@
   </style>
 </head>
 <body>
-  <h1>Action Comics – Comic Covers</h1>
+  <h1>Superman's Girlfriend Lois Lane – Comic Covers</h1>
   <div id="coverContainer"></div>
 
   <script>
@@ -84,9 +84,9 @@
             div.className = 'cover';
 
             div.innerHTML = `
-              <img src="${imageURL}" alt="Action_Comics #${issue}" onerror="this.style.display='none'">
+              <img src="${imageURL}" alt="superman's_girlfriend_lois_lane #${issue}" onerror="this.style.display='none'">
               <p>
-                <strong>Action Comics #${issue}</strong><br>
+                <strong>superman's Girlfriend Lois Lane #${issue}</strong><br>
                 ${month} ${year}<br>
                 Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${penciler}</a><br>
                 Inks: ${inker || '—'}<br>
@@ -104,4 +104,3 @@
   </script>
 </body>
 </html>
-
