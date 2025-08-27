@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Action Comics – Comic Covers</title>
+  <title>My Greatest Adventure – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -55,7 +55,7 @@
   </style>
 </head>
 <body>
-  <h1>Action Comics – Comic Covers</h1>
+  <h1>My Greatest Adventure – Comic Covers</h1>
   <div id="coverContainer"></div>
 
   <script>
@@ -69,7 +69,7 @@
           const cols = row.split(',');
 
           const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle === 'action_comics') {
+          if (rawTitle === 'my_greatest_adventure') {
             const month = cols[0]?.trim();
             const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
@@ -84,9 +84,9 @@
             div.className = 'cover';
 
             div.innerHTML = `
-              <img src="${imageURL}" alt="Action_Comics #${issue}" onerror="this.style.display='none'">
+              <img src="${imageURL}" alt="my_greatest_adventure #${issue}" onerror="this.style.display='none'">
               <p>
-                <strong>Action Comics #${issue}</strong><br>
+                <strong>My Greatest Adventure #${issue}</strong><br>
                 ${month} ${year}<br>
                 Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${penciler}</a><br>
                 Inks: ${inker || '—'}<br>
@@ -104,4 +104,3 @@
   </script>
 </body>
 </html>
-
