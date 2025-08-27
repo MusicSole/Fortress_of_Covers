@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Action Comics – Comic Covers</title>
+  <title>Many Loves of Dobie Gillis – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -55,7 +55,7 @@
   </style>
 </head>
 <body>
-  <h1>Action Comics – Comic Covers</h1>
+  <h1>Many Loves of Dobie Gillis – Comic Covers</h1>
   <div id="coverContainer"></div>
 
   <script>
@@ -69,7 +69,7 @@
           const cols = row.split(',');
 
           const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle === 'action_comics') {
+          if (rawTitle === 'many_loves_of_dobie_gillis') {
             const month = cols[0]?.trim();
             const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
@@ -84,7 +84,7 @@
             div.className = 'cover';
 
             div.innerHTML = `
-              <img src="${imageURL}" alt="Action_Comics #${issue}" onerror="this.style.display='none'">
+              <img src="${imageURL}" alt="Many_Loves_Of_Dobie_Gillis #${issue}" onerror="this.style.display='none'">
               <p>
                 <strong>Action Comics #${issue}</strong><br>
                 ${month} ${year}<br>
