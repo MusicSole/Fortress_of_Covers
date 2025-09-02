@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DC Comics – February 1967 Covers</title>
+  <title>DC Comics – January 1967 Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -56,7 +57,7 @@
   </style>
 </head>
 <body>
-  <h1>DC Comics – February 1967 Covers</h1>
+  <h1>DC Comics – January 1967 Covers</h1>
   <div id="covers">Loading...</div>
 
   <script>
@@ -85,12 +86,12 @@
           // Build proper image path if file name is relative
           let imageUrl = '';
           if (imageFile && !imageFile.startsWith('http')) {
-            imageUrl = `/dc_1967_covers/dc_feb_1967/${imageFile}`;
+            imageUrl = `/dc_1967_covers/dc_jan_1967/${imageFile}`;
           } else {
             imageUrl = imageFile;
           }
 
-          if (month === 'february' && year === '1967' && publisher === 'dc' && imageUrl) {
+          if (month === 'january' && year === '1967' && publisher === 'dc' && imageUrl) {
             const div = document.createElement('div');
             div.className = 'cover';
 
@@ -109,7 +110,7 @@
             }
 
             const text = `
-          <p>
+             <p>
   <a href="/Fortress_of_Covers/titles/${title.toLowerCase().replace(/\s+/g, '_')}.html">
     <strong>${title} #${issue}</strong>
   </a>
@@ -132,4 +133,3 @@
   </script>
 </body>
 </html>
-
