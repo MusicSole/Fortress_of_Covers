@@ -69,7 +69,7 @@
           const cols = row.split(',');
 
           const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle === 'binky's_buddies') {
+          if (rawTitle === 'binky'_s_buddies') {
             const month = cols[0]?.trim();
             const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
@@ -84,7 +84,7 @@
             div.className = 'cover';
 
             div.innerHTML = `
-              <img src="${imageURL}" alt="Binky's_Buddies #${issue}" onerror="this.style.display='none'">
+              <img src="${imageURL}" alt="Binky'_s_Buddies #${issue}" onerror="this.style.display='none'">
               <p>
                 <strong>Binky's Buddies #${issue}</strong><br>
                 ${month} ${year}<br>
