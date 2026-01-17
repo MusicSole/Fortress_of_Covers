@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Incredbile Hulk – Comic Covers</title>
+  <title>Incredible Hulk – Comic Covers</title>
   <style>
     body {
       background-color: #f8f6f2;
@@ -55,7 +55,7 @@
   </style>
 </head>
 <body>
-  <h1>Incredbile Hulk – Comic Covers</h1>
+  <h1>Incredible Hulk – Comic Covers</h1>
   <div id="coverContainer"></div>
 
   <script>
@@ -69,7 +69,7 @@
           const cols = row.split(',');
 
           const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
-          if (rawTitle === 'incredible_hulk_') {
+          if (rawTitle === 'incredible_hulk') {
             const month = cols[0]?.trim();
             const year = cols[1]?.trim();
             const issue = cols[3]?.trim();
