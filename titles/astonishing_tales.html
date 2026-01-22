@@ -1,1 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Astonishing Tales – Comic Covers</title>
+  <style>
+    body {
+      background-color: #f8f6f2;
+      color: #000000;
+      font-family: Garamond, serif;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .cover {
+      display: inline-block;
+      width: 240px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 15px;
+      text-align: left;
+      border: 1px solid #ddd;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .cover:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
+
+    img {
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    .cover p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .cover a {
+      color: #003366;
+      text-decoration: none;
+    }
+
+    .cover a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Astonishing Tales – Comic Covers</h1>
+  <div id="coverContainer"></div>
+
+  <script>
+    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vShO167Fos9NuSDUJhZAdgPRLoq2n99AAgBvVvJkDr0bgcOcljSFPR9Yl0C4_y_tmJU_EXkcITLrHWm/pub?output=csv')
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.trim().split('\n').slice(1);
+        const container = document.getElementById('coverContainer');
+
+        rows.forEach(row => {
+          const cols = row.split(',');
+
+          const rawTitle = cols[2]?.trim().toLowerCase().replace(/\s+/g, '_');
+          if (rawTitle === 'astonishing_tales') {
+            const month = cols[0]?.trim();
+            const year = cols[1]?.trim();
+            const issue = cols[3]?.trim();
+            const penciler = cols[4]?.trim();
+            const inker = cols[5]?.trim();
+            const grade = cols[6]?.trim();
+            const imageURL = cols[8]?.trim();
+
+            const pencilerSlug = penciler.toLowerCase().replaceAll(' ', '_');
+
+            const div = document.createElement('div');
+            div.className = 'cover';
+
+            div.innerHTML = `
+              <img src="${imageURL}" alt="Astonishing_Tales #${issue}" onerror="this.style.display='none'">
+              <p>
+                <strong>Astonishing Tales #${issue}</strong><br>
+                ${month} ${year}<br>
+                Pencils: <a href="/Fortress_of_Covers/artists/${pencilerSlug}.html">${penciler}</a><br>
+                Inks: ${inker || '—'}<br>
+                Grade: ${grade || '—'}
+              </p>
+            `;
+            container.appendChild(div);
+          }
+        });
+      })
+      .catch(error => {
+        document.getElementById('coverContainer').innerText = 'Failed to load covers.';
+        console.error('Error loading CSV:', error);
+      });
+  </script>
+</body>
+</html>
 
